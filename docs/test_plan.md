@@ -12,6 +12,7 @@ This project validates a mini advertising workflow: campaign creation, ad delive
 - Performance tests use Locust to exercise high-volume `/ads/request` traffic.
 - CI runs the automated regression suite on every push and pull request.
 - Quality gates include Ruff linting, mypy type checking, and pytest coverage.
+- Event pipeline tests validate raw event ingestion, processing status transitions, materialization, and failed-event handling.
 
 ## Key Quality Risks
 
@@ -23,3 +24,4 @@ This project validates a mini advertising workflow: campaign creation, ad delive
 - Repeated click patterns may indicate invalid or suspicious traffic.
 - Database schema drift may break staging or production deploys without Alembic migrations.
 - Alert ownership/status gaps may make quality issues hard to track through resolution.
+- Raw event processing failures may silently drop ad events without pending/processed/failed tracking.

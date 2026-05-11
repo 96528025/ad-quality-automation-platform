@@ -1,6 +1,6 @@
 # Ad Quality Automation Platform
 
-A testing-focused mini ad platform that simulates campaign creation, ad delivery, event tracking, conversion attribution, quality alerts, synthetic traffic, and automated regression testing.
+A testing-focused mini ad platform that simulates campaign creation, ad delivery, event ingestion, conversion attribution, quality alerts, synthetic traffic, and automated regression testing.
 
 This is a portfolio project for quality engineering and backend testing roles. It is not intended to be a production ad server. The goal is to model realistic quality risks in advertising systems and validate them through API, integration, and performance tests.
 
@@ -22,10 +22,12 @@ This is a portfolio project for quality engineering and backend testing roles. I
 5. Request an ad for a user.
 6. Select eligible ads using status, review approval, targeting, budget, pacing, frequency caps, and ranking score.
 7. Store an impression when an ad is delivered.
-8. Record clicks against impressions and deduct CPC budget.
-9. Record conversions against clicks within a 7-day attribution window.
-10. Calculate CTR, CVR, spend, and remaining budget.
-11. Run quality checks for abnormal CTR/CVR and repeated click patterns.
+8. Ingest raw ad events into a DB-backed event queue.
+9. Process pending events into impressions, clicks, conversions, and hourly metrics.
+10. Record clicks against impressions and deduct CPC budget.
+11. Record conversions against clicks within a 7-day attribution window.
+12. Calculate CTR, CVR, spend, and remaining budget.
+13. Run quality checks for abnormal CTR/CVR and repeated click patterns.
 
 ## Run Locally
 
@@ -122,6 +124,23 @@ With the API running:
 python scripts/demo_workflow.py --base-url http://127.0.0.1:8000
 ```
 
+## Run Event Worker
+
+The project includes a lightweight DB-backed event pipeline to simulate production-style ingestion and asynchronous processing.
+
+```bash
+cd backend
+python -m app.workers.event_worker
+```
+
+Useful event pipeline endpoints:
+
+```text
+POST /events/ingest
+POST /events/process-pending
+GET /events/{event_id}
+```
+
 ## Run Performance Test
 
 Start the API first, then run:
@@ -149,6 +168,8 @@ See [docs/performance_report.md](docs/performance_report.md) for the latest reco
 - Hourly campaign metrics aggregation table for scalable metrics reads
 - Delivery decision features: ad review status, frequency capping, device/interest targeting, budget pacing, and effective ranking score
 - Simplified ranking model: `score = bid_cpc * predicted_ctr * quality_score`
+- DB-backed raw event pipeline with `pending`, `processed`, and `failed` statuses
+- Worker-style event processor that materializes raw events into impressions, clicks, conversions, and hourly metrics
 
 ## Project Structure
 
@@ -172,13 +193,13 @@ docs/
 
 ## Resume Positioning
 
-Built a testing-focused ad quality automation platform with FastAPI, SQLAlchemy, Pytest, and Locust to validate campaign creation, ad delivery, impression/click/conversion tracking, attribution rules, and abnormal CTR/CVR quality alerts using synthetic traffic data.
+Built a testing-focused ad quality automation platform with FastAPI, SQLAlchemy, Pytest, and Locust to validate campaign creation, ad delivery, raw event ingestion, impression/click/conversion processing, attribution rules, and abnormal CTR/CVR quality alerts using synthetic traffic data.
 
 ---
 
 # 广告质量自动化测试平台
 
-这是一个以测试开发和质量保障为核心的小型广告系统项目，用于模拟广告活动创建、广告投放、事件追踪、转化归因、质量告警、合成流量生成和自动化回归测试。
+这是一个以测试开发和质量保障为核心的小型广告系统项目，用于模拟广告活动创建、广告投放、事件采集、转化归因、质量告警、合成流量生成和自动化回归测试。
 
 该项目主要面向质量工程、测试开发、后端测试和广告系统相关岗位。它不是生产级广告服务器，而是通过一个简化的广告业务系统，模拟工业界广告系统中常见的质量风险，并用 API 测试、集成测试、性能测试和质量规则进行验证。
 
@@ -200,10 +221,12 @@ Built a testing-focused ad quality automation platform with FastAPI, SQLAlchemy,
 5. 用户请求广告。
 6. 系统根据状态、审核结果、定向规则、预算、pacing、频控和排序分选择可投放广告。
 7. 广告成功投放后记录曝光事件。
-8. 根据曝光记录点击事件，并扣减 CPC 预算。
-9. 在 7 天归因窗口内记录转化事件。
-10. 计算 CTR、CVR、花费和剩余预算。
-11. 针对异常 CTR/CVR 和重复点击模式运行质量检测。
+8. 将原始广告事件写入 DB-backed event queue。
+9. 由 processor 将 pending 事件物化为曝光、点击、转化和小时级 metrics。
+10. 根据曝光记录点击事件，并扣减 CPC 预算。
+11. 在 7 天归因窗口内记录转化事件。
+12. 计算 CTR、CVR、花费和剩余预算。
+13. 针对异常 CTR/CVR 和重复点击模式运行质量检测。
 
 ## 本地运行
 
@@ -302,6 +325,23 @@ python scripts/demo_workflow.py --base-url http://127.0.0.1:8000
 
 该脚本会自动完成用户创建、广告活动创建、广告投放、点击、转化、指标查询和质量告警检测。
 
+## 运行事件处理 Worker
+
+项目包含轻量级 DB-backed event pipeline，用于模拟生产环境中的事件采集和异步处理链路。
+
+```bash
+cd backend
+python -m app.workers.event_worker
+```
+
+相关接口：
+
+```text
+POST /events/ingest
+POST /events/process-pending
+GET /events/{event_id}
+```
+
 ## 运行性能测试
 
 先启动 API，然后执行：
@@ -329,6 +369,8 @@ cd backend
 - 小时级广告活动指标聚合表，用于提升 metrics 查询扩展性
 - 投放决策能力：广告审核状态、频控、设备/兴趣定向、预算 pacing 和有效排序分
 - 简化广告排序模型：`score = bid_cpc * predicted_ctr * quality_score`
+- DB-backed 原始事件链路，支持 `pending`、`processed`、`failed` 状态
+- Worker-style 事件处理器，将原始事件物化为曝光、点击、转化和小时级聚合指标
 
 ## 项目结构
 
@@ -352,4 +394,4 @@ docs/
 
 ## 简历描述建议
 
-设计并实现了一个以测试开发为核心的广告质量自动化平台，使用 FastAPI、SQLAlchemy、Pytest 和 Locust，覆盖广告活动创建、广告投放、广告审核状态、频控、设备/兴趣定向、预算 pacing、简化排序分、曝光/点击/转化追踪、7 天转化归因、异常 CTR/CVR 告警、合成流量生成、自动化回归测试和性能测试。
+设计并实现了一个以测试开发为核心的广告质量自动化平台，使用 FastAPI、SQLAlchemy、Pytest 和 Locust，覆盖广告活动创建、广告投放、广告审核状态、频控、设备/兴趣定向、预算 pacing、简化排序分、原始事件采集、曝光/点击/转化处理、7 天转化归因、异常 CTR/CVR 告警、合成流量生成、自动化回归测试和性能测试。

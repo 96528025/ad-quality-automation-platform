@@ -18,3 +18,6 @@
 | TC-014 | Check `/ready` endpoint | API verifies database connectivity |
 | TC-015 | Update quality alert lifecycle fields | Alert status, owner, and note are persisted |
 | TC-016 | Load campaign metrics after events | Metrics are read from hourly aggregate data |
+| TC-017 | Ingest impression raw event | Event starts as pending and processor materializes impression metrics |
+| TC-018 | Ingest click and conversion raw events | Processor materializes click/conversion and updates metrics |
+| TC-019 | Ingest invalid click event | Processor marks event as failed with no materialized click |

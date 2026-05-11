@@ -34,6 +34,18 @@ class ReviewStatus(str, Enum):
     rejected = "rejected"
 
 
+class EventType(str, Enum):
+    impression = "impression"
+    click = "click"
+    conversion = "conversion"
+
+
+class EventStatus(str, Enum):
+    pending = "pending"
+    processed = "processed"
+    failed = "failed"
+
+
 class User(Base):
     __tablename__ = "users"
 
@@ -145,3 +157,22 @@ class CampaignMetricsHourly(Base):
     spend: Mapped[float] = mapped_column(Float, default=0.0)
     conversion_value: Mapped[float] = mapped_column(Float, default=0.0)
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+
+class AdEvent(Base):
+    __tablename__ = "ad_events"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    event_type: Mapped[EventType] = mapped_column(SqlEnum(EventType), index=True)
+    status: Mapped[EventStatus] = mapped_column(SqlEnum(EventStatus), default=EventStatus.pending, index=True)
+    campaign_id: Mapped[int | None] = mapped_column(ForeignKey("campaigns.id"), nullable=True, index=True)
+    ad_id: Mapped[int | None] = mapped_column(ForeignKey("ads.id"), nullable=True, index=True)
+    user_id: Mapped[int | None] = mapped_column(ForeignKey("users.id"), nullable=True, index=True)
+    impression_id: Mapped[int | None] = mapped_column(ForeignKey("impressions.id"), nullable=True, index=True)
+    click_id: Mapped[int | None] = mapped_column(ForeignKey("clicks.id"), nullable=True, index=True)
+    conversion_value: Mapped[float | None] = mapped_column(Float, nullable=True)
+    materialized_id: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    error_message: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    event_time: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
+    processed_at: Mapped[datetime | None] = mapped_column(DateTime, nullable=True)

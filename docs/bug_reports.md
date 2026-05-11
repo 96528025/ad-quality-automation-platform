@@ -29,3 +29,13 @@
 - Actual: Delivery selected an older matching campaign, so the newly created campaign showed zero metrics.
 - Root cause: Delivery tie-breaking only considered bid and did not provide deterministic selection among equal bids.
 - Fix validation: Added deterministic tie-breaking by bid and campaign ID; demo reads metrics from the delivered campaign.
+
+## BUG-004: Raw Event Silently Dropped
+
+- Severity: High
+- Area: Event ingestion pipeline
+- Steps: Submit a click event with an invalid `impression_id`.
+- Expected: The event should be retained and marked failed with a clear error.
+- Actual: Without event status tracking, invalid events could be lost after API rejection.
+- Root cause: Direct API-to-table writes do not preserve failed raw event attempts.
+- Fix validation: Added `ad_events` table with `pending`, `processed`, and `failed` states plus processor tests.

@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, model_validator
 
-from app.models import AlertSeverity, AlertStatus, CampaignStatus, ReviewStatus
+from app.models import AlertSeverity, AlertStatus, CampaignStatus, EventStatus, EventType, ReviewStatus
 
 
 class UserCreate(BaseModel):
@@ -124,6 +124,41 @@ class ConversionRead(BaseModel):
     campaign_id: int
     user_id: int
     conversion_value: float
+
+
+class AdEventCreate(BaseModel):
+    event_type: EventType
+    campaign_id: int | None = None
+    ad_id: int | None = None
+    user_id: int | None = None
+    impression_id: int | None = None
+    click_id: int | None = None
+    conversion_value: float | None = Field(default=None, gt=0)
+    event_time: datetime | None = None
+
+
+class AdEventRead(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    event_type: EventType
+    status: EventStatus
+    campaign_id: int | None = None
+    ad_id: int | None = None
+    user_id: int | None = None
+    impression_id: int | None = None
+    click_id: int | None = None
+    conversion_value: float | None = None
+    materialized_id: int | None = None
+    error_message: str | None = None
+    event_time: datetime
+    created_at: datetime
+    processed_at: datetime | None = None
+
+
+class EventProcessResult(BaseModel):
+    processed: int
+    failed: int
 
 
 class CampaignMetrics(BaseModel):
