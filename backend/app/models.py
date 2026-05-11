@@ -28,6 +28,12 @@ class AlertStatus(str, Enum):
     false_positive = "false_positive"
 
 
+class ReviewStatus(str, Enum):
+    pending = "pending"
+    approved = "approved"
+    rejected = "rejected"
+
+
 class User(Base):
     __tablename__ = "users"
 
@@ -49,6 +55,10 @@ class Campaign(Base):
     target_country: Mapped[str] = mapped_column(String(2), index=True)
     target_age_min: Mapped[int] = mapped_column(Integer)
     target_age_max: Mapped[int] = mapped_column(Integer)
+    target_device: Mapped[str] = mapped_column(String(32), default="any")
+    target_interests: Mapped[str] = mapped_column(String(255), default="")
+    frequency_cap_per_day: Mapped[int] = mapped_column(Integer, default=10)
+    pacing_enabled: Mapped[bool] = mapped_column(default=False)
     status: Mapped[CampaignStatus] = mapped_column(SqlEnum(CampaignStatus), default=CampaignStatus.active)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
@@ -63,6 +73,13 @@ class Ad(Base):
     title: Mapped[str] = mapped_column(String(120))
     landing_url: Mapped[str] = mapped_column(String(500))
     creative_url: Mapped[str] = mapped_column(String(500), default="")
+    review_status: Mapped[ReviewStatus] = mapped_column(
+        SqlEnum(ReviewStatus),
+        default=ReviewStatus.approved,
+        index=True,
+    )
+    predicted_ctr: Mapped[float] = mapped_column(Float, default=0.05)
+    quality_score: Mapped[float] = mapped_column(Float, default=1.0)
 
     campaign: Mapped[Campaign] = relationship(back_populates="ads")
 

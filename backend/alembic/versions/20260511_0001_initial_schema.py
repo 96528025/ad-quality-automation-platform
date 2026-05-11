@@ -155,4 +155,3 @@ def downgrade() -> None:
     alert_status.drop(op.get_bind(), checkfirst=True)
     alert_severity.drop(op.get_bind(), checkfirst=True)
     campaign_status.drop(op.get_bind(), checkfirst=True)
-

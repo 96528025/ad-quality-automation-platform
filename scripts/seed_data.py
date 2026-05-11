@@ -27,6 +27,10 @@ def main() -> None:
             target_country="US",
             target_age_min=18,
             target_age_max=35,
+            target_device="any",
+            target_interests="sports,fitness",
+            frequency_cap_per_day=10,
+            pacing_enabled=False,
             status=CampaignStatus.active,
         )
         db.add_all(users + [campaign])
@@ -37,6 +41,9 @@ def main() -> None:
                 title="Running Shoes",
                 landing_url="https://example.com/running-shoes",
                 creative_url="https://example.com/creative/shoes.png",
+                review_status="approved",
+                predicted_ctr=0.08,
+                quality_score=0.9,
             )
         )
         db.commit()

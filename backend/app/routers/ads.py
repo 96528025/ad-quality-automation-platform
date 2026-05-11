@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from app import schemas
 from app.database import get_db
-from app.services.delivery import deliver_ad
+from app.services.delivery import deliver_ad, ranking_score
 
 router = APIRouter(prefix="/ads", tags=["ads"])
 
@@ -20,6 +20,6 @@ def request_ad(payload: schemas.AdRequest, db: Session = Depends(get_db)) -> sch
         ad_id=ad.id,
         impression_id=impression.id,
         bid_cpc=ad.campaign.bid_cpc,
+        ranking_score=ranking_score(ad),
         landing_url=ad.landing_url,
     )
-

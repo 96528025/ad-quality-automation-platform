@@ -17,13 +17,15 @@ This is a portfolio project for quality engineering and backend testing roles. I
 
 1. Create a campaign with budget, bid, status, and targeting rules.
 2. Create an ad under the campaign.
-3. Create synthetic users.
-4. Request an ad for a user.
-5. Store an impression when an ad is delivered.
-6. Record clicks against impressions and deduct CPC budget.
-7. Record conversions against clicks within a 7-day attribution window.
-8. Calculate CTR, CVR, spend, and remaining budget.
-9. Run quality checks for abnormal CTR/CVR and repeated click patterns.
+3. Configure ad review status, frequency caps, pacing, and ranking inputs.
+4. Create synthetic users.
+5. Request an ad for a user.
+6. Select eligible ads using status, review approval, targeting, budget, pacing, frequency caps, and ranking score.
+7. Store an impression when an ad is delivered.
+8. Record clicks against impressions and deduct CPC budget.
+9. Record conversions against clicks within a 7-day attribution window.
+10. Calculate CTR, CVR, spend, and remaining budget.
+11. Run quality checks for abnormal CTR/CVR and repeated click patterns.
 
 ## Run Locally
 
@@ -145,6 +147,8 @@ See [docs/performance_report.md](docs/performance_report.md) for the latest reco
 - Structured JSON request logs with request IDs and latency
 - Alert lifecycle fields: `open`, `acknowledged`, `investigating`, `resolved`, `false_positive`
 - Hourly campaign metrics aggregation table for scalable metrics reads
+- Delivery decision features: ad review status, frequency capping, device/interest targeting, budget pacing, and effective ranking score
+- Simplified ranking model: `score = bid_cpc * predicted_ctr * quality_score`
 
 ## Project Structure
 
@@ -191,13 +195,15 @@ Built a testing-focused ad quality automation platform with FastAPI, SQLAlchemy,
 
 1. 创建带有预算、出价、状态和定向规则的广告活动。
 2. 在广告活动下创建广告创意。
-3. 创建合成用户数据。
-4. 用户请求广告。
-5. 广告成功投放后记录曝光事件。
-6. 根据曝光记录点击事件，并扣减 CPC 预算。
-7. 在 7 天归因窗口内记录转化事件。
-8. 计算 CTR、CVR、花费和剩余预算。
-9. 针对异常 CTR/CVR 和重复点击模式运行质量检测。
+3. 配置广告审核状态、频控、预算 pacing 和排序输入。
+4. 创建合成用户数据。
+5. 用户请求广告。
+6. 系统根据状态、审核结果、定向规则、预算、pacing、频控和排序分选择可投放广告。
+7. 广告成功投放后记录曝光事件。
+8. 根据曝光记录点击事件，并扣减 CPC 预算。
+9. 在 7 天归因窗口内记录转化事件。
+10. 计算 CTR、CVR、花费和剩余预算。
+11. 针对异常 CTR/CVR 和重复点击模式运行质量检测。
 
 ## 本地运行
 
@@ -321,6 +327,8 @@ cd backend
 - 带 request ID 和 latency 的结构化 JSON 请求日志
 - 告警生命周期字段：`open`, `acknowledged`, `investigating`, `resolved`, `false_positive`
 - 小时级广告活动指标聚合表，用于提升 metrics 查询扩展性
+- 投放决策能力：广告审核状态、频控、设备/兴趣定向、预算 pacing 和有效排序分
+- 简化广告排序模型：`score = bid_cpc * predicted_ctr * quality_score`
 
 ## 项目结构
 
@@ -344,4 +352,4 @@ docs/
 
 ## 简历描述建议
 
-设计并实现了一个以测试开发为核心的广告质量自动化平台，使用 FastAPI、SQLAlchemy、Pytest 和 Locust，覆盖广告活动创建、广告投放、曝光/点击/转化追踪、7 天转化归因、异常 CTR/CVR 告警、合成流量生成、自动化回归测试和性能测试。
+设计并实现了一个以测试开发为核心的广告质量自动化平台，使用 FastAPI、SQLAlchemy、Pytest 和 Locust，覆盖广告活动创建、广告投放、广告审核状态、频控、设备/兴趣定向、预算 pacing、简化排序分、曝光/点击/转化追踪、7 天转化归因、异常 CTR/CVR 告警、合成流量生成、自动化回归测试和性能测试。

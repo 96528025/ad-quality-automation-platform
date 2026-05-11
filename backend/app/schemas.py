@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, model_validator
 
-from app.models import AlertSeverity, AlertStatus, CampaignStatus
+from app.models import AlertSeverity, AlertStatus, CampaignStatus, ReviewStatus
 
 
 class UserCreate(BaseModel):
@@ -25,6 +25,10 @@ class CampaignCreate(BaseModel):
     target_country: str = Field(min_length=2, max_length=2)
     target_age_min: int = Field(ge=0, le=120)
     target_age_max: int = Field(ge=0, le=120)
+    target_device: str = "any"
+    target_interests: str = ""
+    frequency_cap_per_day: int = Field(default=10, ge=1)
+    pacing_enabled: bool = False
     status: CampaignStatus = CampaignStatus.active
 
     @model_validator(mode="after")
@@ -45,6 +49,10 @@ class CampaignRead(BaseModel):
     target_country: str
     target_age_min: int
     target_age_max: int
+    target_device: str
+    target_interests: str
+    frequency_cap_per_day: int
+    pacing_enabled: bool
     status: CampaignStatus
 
 
@@ -57,6 +65,9 @@ class AdCreate(BaseModel):
     title: str
     landing_url: HttpUrl
     creative_url: str = ""
+    review_status: ReviewStatus = ReviewStatus.approved
+    predicted_ctr: float = Field(default=0.05, ge=0, le=1)
+    quality_score: float = Field(default=1.0, ge=0, le=1)
 
 
 class AdRead(BaseModel):
@@ -67,6 +78,9 @@ class AdRead(BaseModel):
     title: str
     landing_url: str
     creative_url: str
+    review_status: ReviewStatus
+    predicted_ctr: float
+    quality_score: float
 
 
 class AdRequest(BaseModel):
@@ -78,6 +92,7 @@ class AdDeliveryRead(BaseModel):
     ad_id: int
     impression_id: int
     bid_cpc: float
+    ranking_score: float
     landing_url: str
 
 
