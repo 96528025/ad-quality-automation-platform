@@ -169,3 +169,179 @@ docs/
 ## Resume Positioning
 
 Built a testing-focused ad quality automation platform with FastAPI, SQLAlchemy, Pytest, and Locust to validate campaign creation, ad delivery, impression/click/conversion tracking, attribution rules, and abnormal CTR/CVR quality alerts using synthetic traffic data.
+
+---
+
+# 广告质量自动化测试平台
+
+这是一个以测试开发和质量保障为核心的小型广告系统项目，用于模拟广告活动创建、广告投放、事件追踪、转化归因、质量告警、合成流量生成和自动化回归测试。
+
+该项目主要面向质量工程、测试开发、后端测试和广告系统相关岗位。它不是生产级广告服务器，而是通过一个简化的广告业务系统，模拟工业界广告系统中常见的质量风险，并用 API 测试、集成测试、性能测试和质量规则进行验证。
+
+## 技术栈
+
+- 后端：FastAPI, SQLAlchemy
+- 数据库：默认使用 SQLite，同时支持 PostgreSQL 配置
+- 测试：Pytest, FastAPI TestClient
+- 性能测试：Locust
+- 数据：合成种子数据和流量生成脚本
+- CI：GitHub Actions
+
+## 核心业务流程
+
+1. 创建带有预算、出价、状态和定向规则的广告活动。
+2. 在广告活动下创建广告创意。
+3. 创建合成用户数据。
+4. 用户请求广告。
+5. 广告成功投放后记录曝光事件。
+6. 根据曝光记录点击事件，并扣减 CPC 预算。
+7. 在 7 天归因窗口内记录转化事件。
+8. 计算 CTR、CVR、花费和剩余预算。
+9. 针对异常 CTR/CVR 和重复点击模式运行质量检测。
+
+## 本地运行
+
+```bash
+cd backend
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+uvicorn app.main:app --reload
+```
+
+API 文档地址：
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+可视化演示页面：
+
+```text
+http://127.0.0.1:8000/
+```
+
+如果本机文件监听受限，可以不使用 reload：
+
+```bash
+uvicorn app.main:app
+```
+
+## 使用 Docker 和 PostgreSQL 运行
+
+```bash
+docker compose up --build
+```
+
+启动后访问：
+
+```text
+http://127.0.0.1:8000/
+```
+
+## 运行测试
+
+```bash
+cd backend
+pytest
+```
+
+测试命令会通过 `pytest-cov` 生成覆盖率报告。
+
+## 代码质量检查
+
+```bash
+cd backend
+ruff check .
+mypy app
+pytest
+```
+
+当前本地验证包括代码规范检查、类型检查、16 个自动化测试和测试覆盖率报告。
+
+## 数据库迁移
+
+项目使用 Alembic 管理 PostgreSQL 和本地 SQLite 兼容的数据库 schema 迁移。
+
+```bash
+cd backend
+alembic upgrade head
+```
+
+使用 Docker Compose 启动时，API 服务启动前会自动执行数据库迁移。
+
+## 生成合成数据
+
+在项目根目录执行：
+
+```bash
+python scripts/seed_data.py
+python scripts/generate_traffic.py
+python scripts/inject_anomalies.py
+```
+
+重置本地 SQLite 数据库：
+
+```bash
+python scripts/reset_data.py
+```
+
+## 一键演示完整流程
+
+启动 API 后执行：
+
+```bash
+python scripts/demo_workflow.py --base-url http://127.0.0.1:8000
+```
+
+该脚本会自动完成用户创建、广告活动创建、广告投放、点击、转化、指标查询和质量告警检测。
+
+## 运行性能测试
+
+先启动 API，然后执行：
+
+```bash
+locust -f performance/locustfile.py --host http://127.0.0.1:8000
+```
+
+也可以运行无界面的基准压测：
+
+```bash
+cd backend
+.venv/bin/locust -f ../performance/locustfile.py --host http://127.0.0.1:8000 --headless -u 100 -r 10 -t 1m --html ../performance/report.html --csv ../performance/results
+```
+
+最新本地性能测试结果见 [docs/performance_report.md](docs/performance_report.md)。
+
+## 工业化能力
+
+- 支持 PostgreSQL 的数据库配置和 Alembic schema 迁移
+- Ruff 代码规范检查、mypy 类型检查和 pytest 覆盖率报告
+- `/health` 和 `/ready` 服务健康检查与数据库就绪检查
+- 带 request ID 和 latency 的结构化 JSON 请求日志
+- 告警生命周期字段：`open`, `acknowledged`, `investigating`, `resolved`, `false_positive`
+- 小时级广告活动指标聚合表，用于提升 metrics 查询扩展性
+
+## 项目结构
+
+```text
+backend/
+  app/
+    routers/
+    services/
+    main.py
+    models.py
+    schemas.py
+  tests/
+    unit/
+    api/
+    integration/
+scripts/
+performance/
+docs/
+.github/workflows/
+```
+
+## 简历描述建议
+
+设计并实现了一个以测试开发为核心的广告质量自动化平台，使用 FastAPI、SQLAlchemy、Pytest 和 Locust，覆盖广告活动创建、广告投放、曝光/点击/转化追踪、7 天转化归因、异常 CTR/CVR 告警、合成流量生成、自动化回归测试和性能测试。
