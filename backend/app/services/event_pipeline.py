@@ -5,6 +5,13 @@ from sqlalchemy.orm import Session
 from app import models
 from app.services.aggregation import increment_impression
 from app.services.attribution import record_click, record_conversion
+from app.services.fraud import (
+    INVALID_RISK_THRESHOLD,
+    SUSPICIOUS_RISK_THRESHOLD,
+    fraud_alert_severity,
+    score_click_event,
+)
+from app.services.quality import create_alert
 
 
 def ingest_event(
@@ -16,6 +23,9 @@ def ingest_event(
     impression_id: int | None = None,
     click_id: int | None = None,
     conversion_value: float | None = None,
+    ip_address: str | None = None,
+    device_id: str | None = None,
+    user_agent: str | None = None,
     event_time: datetime | None = None,
 ) -> models.AdEvent:
     event = models.AdEvent(
@@ -26,6 +36,9 @@ def ingest_event(
         impression_id=impression_id,
         click_id=click_id,
         conversion_value=conversion_value,
+        ip_address=ip_address,
+        device_id=device_id,
+        user_agent=user_agent,
         event_time=event_time or datetime.utcnow(),
     )
     db.add(event)
@@ -105,6 +118,26 @@ def process_impression_event(db: Session, event: models.AdEvent) -> int:
 def process_click_event(db: Session, event: models.AdEvent) -> int:
     if event.impression_id is None:
         raise ValueError("click event requires impression_id")
+    risk_score, risk_reasons = score_click_event(db, event)
+    event.risk_score = risk_score
+    if risk_reasons:
+        event.invalid_reason = ",".join(risk_reasons)
+
+    if risk_score >= SUSPICIOUS_RISK_THRESHOLD:
+        impression = db.get(models.Impression, event.impression_id)
+        if impression is not None:
+            create_alert(
+                db,
+                impression.campaign_id,
+                "invalid_traffic_risk",
+                fraud_alert_severity(risk_score),
+                f"Click event risk score {risk_score}: {', '.join(risk_reasons)}.",
+            )
+
+    if risk_score >= INVALID_RISK_THRESHOLD:
+        event.is_invalid = True
+        raise ValueError(f"invalid click filtered: {event.invalid_reason}")
+
     click = record_click(db, event.impression_id)
     return click.id
 

@@ -170,6 +170,8 @@ See [docs/performance_report.md](docs/performance_report.md) for the latest reco
 - Simplified ranking model: `score = bid_cpc * predicted_ctr * quality_score`
 - DB-backed raw event pipeline with `pending`, `processed`, and `failed` statuses
 - Worker-style event processor that materializes raw events into impressions, clicks, conversions, and hourly metrics
+- Lightweight invalid-traffic detection using IP, device ID, user-agent, repeated-click signals, and rule-based risk scoring
+- High-risk click events are filtered before materialization, so they do not affect spend or CTR/CVR metrics
 
 ## Project Structure
 
@@ -193,7 +195,7 @@ docs/
 
 ## Resume Positioning
 
-Built a testing-focused ad quality automation platform with FastAPI, SQLAlchemy, Pytest, and Locust to validate campaign creation, ad delivery, raw event ingestion, impression/click/conversion processing, attribution rules, and abnormal CTR/CVR quality alerts using synthetic traffic data.
+Built a testing-focused ad quality automation platform with FastAPI, SQLAlchemy, Pytest, and Locust to validate campaign creation, ad delivery, raw event ingestion, impression/click/conversion processing, attribution rules, invalid-traffic filtering, and abnormal CTR/CVR quality alerts using synthetic traffic data.
 
 ---
 
@@ -371,6 +373,8 @@ cd backend
 - 简化广告排序模型：`score = bid_cpc * predicted_ctr * quality_score`
 - DB-backed 原始事件链路，支持 `pending`、`processed`、`failed` 状态
 - Worker-style 事件处理器，将原始事件物化为曝光、点击、转化和小时级聚合指标
+- 轻量级反异常流量检测，基于 IP、device ID、user-agent、重复点击等信号计算 rule-based risk score
+- 高风险 click 事件会在物化前被过滤，不会影响花费、CTR 或 CVR 指标
 
 ## 项目结构
 
@@ -394,4 +398,4 @@ docs/
 
 ## 简历描述建议
 
-设计并实现了一个以测试开发为核心的广告质量自动化平台，使用 FastAPI、SQLAlchemy、Pytest 和 Locust，覆盖广告活动创建、广告投放、广告审核状态、频控、设备/兴趣定向、预算 pacing、简化排序分、原始事件采集、曝光/点击/转化处理、7 天转化归因、异常 CTR/CVR 告警、合成流量生成、自动化回归测试和性能测试。
+设计并实现了一个以测试开发为核心的广告质量自动化平台，使用 FastAPI、SQLAlchemy、Pytest 和 Locust，覆盖广告活动创建、广告投放、广告审核状态、频控、设备/兴趣定向、预算 pacing、简化排序分、原始事件采集、曝光/点击/转化处理、7 天转化归因、无效流量过滤、异常 CTR/CVR 告警、合成流量生成、自动化回归测试和性能测试。

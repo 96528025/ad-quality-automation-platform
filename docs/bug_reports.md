@@ -39,3 +39,13 @@
 - Actual: Without event status tracking, invalid events could be lost after API rejection.
 - Root cause: Direct API-to-table writes do not preserve failed raw event attempts.
 - Fix validation: Added `ad_events` table with `pending`, `processed`, and `failed` states plus processor tests.
+
+## BUG-005: High-Risk Click Counted as Billable
+
+- Severity: High
+- Area: Invalid traffic filtering
+- Steps: Generate repeated clicks from one user/ad and submit another raw click from a high-volume IP with missing user-agent.
+- Expected: High-risk click should be filtered before materialization and should not affect spend or CTR.
+- Actual: Without risk scoring, the click could be treated as valid and billable.
+- Root cause: Event processor did not evaluate fraud signals before writing click records.
+- Fix validation: Added rule-based risk scoring and invalid-traffic alert test coverage.

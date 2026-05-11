@@ -13,6 +13,7 @@ This project validates a mini advertising workflow: campaign creation, ad delive
 - CI runs the automated regression suite on every push and pull request.
 - Quality gates include Ruff linting, mypy type checking, and pytest coverage.
 - Event pipeline tests validate raw event ingestion, processing status transitions, materialization, and failed-event handling.
+- Invalid-traffic tests validate risk scoring, event filtering, and alert creation before clicks affect spend or metrics.
 
 ## Key Quality Risks
 
@@ -25,3 +26,4 @@ This project validates a mini advertising workflow: campaign creation, ad delive
 - Database schema drift may break staging or production deploys without Alembic migrations.
 - Alert ownership/status gaps may make quality issues hard to track through resolution.
 - Raw event processing failures may silently drop ad events without pending/processed/failed tracking.
+- High-risk click traffic may incorrectly affect billing and CTR/CVR metrics if not filtered before materialization.

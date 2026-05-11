@@ -134,6 +134,9 @@ class AdEventCreate(BaseModel):
     impression_id: int | None = None
     click_id: int | None = None
     conversion_value: float | None = Field(default=None, gt=0)
+    ip_address: str | None = Field(default=None, max_length=64)
+    device_id: str | None = Field(default=None, max_length=120)
+    user_agent: str | None = Field(default=None, max_length=255)
     event_time: datetime | None = None
 
 
@@ -149,6 +152,12 @@ class AdEventRead(BaseModel):
     impression_id: int | None = None
     click_id: int | None = None
     conversion_value: float | None = None
+    ip_address: str | None = None
+    device_id: str | None = None
+    user_agent: str | None = None
+    risk_score: int
+    is_invalid: bool
+    invalid_reason: str | None = None
     materialized_id: int | None = None
     error_message: str | None = None
     event_time: datetime

@@ -44,6 +44,9 @@ def ingest_ad_event(payload: schemas.AdEventCreate, db: Session = Depends(get_db
         impression_id=payload.impression_id,
         click_id=payload.click_id,
         conversion_value=payload.conversion_value,
+        ip_address=payload.ip_address,
+        device_id=payload.device_id,
+        user_agent=payload.user_agent,
         event_time=payload.event_time,
     )
 

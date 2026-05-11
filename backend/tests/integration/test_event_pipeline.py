@@ -102,3 +102,39 @@ def test_invalid_ingested_click_event_is_marked_failed(client: TestClient) -> No
 
     assert event["status"] == "pending"
     assert result == {"processed": 0, "failed": 1}
+
+
+def test_high_risk_click_event_is_filtered_and_alerted(client: TestClient) -> None:
+    campaign, _, user = create_campaign_ad_user(client)
+    delivery = client.post("/ads/request", json={"user_id": user["id"]}).json()
+    for _ in range(3):
+        client.post("/events/click", json={"impression_id": delivery["impression_id"]})
+
+    for _ in range(20):
+        client.post(
+            "/events/ingest",
+            json={"event_type": "click", "impression_id": 999, "ip_address": "10.0.0.1"},
+        )
+    warmup_result = client.post("/events/process-pending").json()
+
+    risky_event = client.post(
+        "/events/ingest",
+        json={
+            "event_type": "click",
+            "impression_id": delivery["impression_id"],
+            "ip_address": "10.0.0.1",
+        },
+    ).json()
+    result = client.post("/events/process-pending").json()
+    processed_event = client.get(f"/events/{risky_event['id']}").json()
+    metrics = client.get(f"/metrics/campaigns/{campaign['id']}").json()
+    alerts = client.get("/quality/alerts").json()
+
+    assert warmup_result == {"processed": 0, "failed": 20}
+    assert result == {"processed": 0, "failed": 1}
+    assert processed_event["status"] == "failed"
+    assert processed_event["is_invalid"] is True
+    assert processed_event["risk_score"] >= 70
+    assert "high_ip_click_volume" in processed_event["invalid_reason"]
+    assert metrics["clicks"] == 3
+    assert any(alert["alert_type"] == "invalid_traffic_risk" for alert in alerts)
