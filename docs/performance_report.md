@@ -54,7 +54,7 @@ cd backend
 
 ## Acceptance Criteria
 
-For this portfolio MVP, a reasonable local baseline is:
+For this MVP, a reasonable local baseline is:
 
 - Failure rate below 1%
 - p95 latency below 300 ms on `/ads/request`

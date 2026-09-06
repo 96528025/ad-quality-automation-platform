@@ -2,7 +2,7 @@
 
 A testing-focused mini ad platform that simulates campaign creation, ad delivery, event ingestion, conversion attribution, quality alerts, synthetic traffic, and automated regression testing.
 
-This is a portfolio project for quality engineering and backend testing roles. It is not intended to be a production ad server. The goal is to model realistic quality risks in advertising systems and validate them through API, integration, and performance tests.
+It is not intended to be a production ad server. The goal is to model realistic quality risks in advertising systems and validate them through API, integration, and performance tests.
 
 ## Tech Stack
 
@@ -193,17 +193,13 @@ docs/
 .github/workflows/
 ```
 
-## Resume Positioning
-
-Built a testing-focused ad quality automation platform with FastAPI, SQLAlchemy, Pytest, and Locust to validate campaign creation, ad delivery, raw event ingestion, impression/click/conversion processing, attribution rules, invalid-traffic filtering, and abnormal CTR/CVR quality alerts using synthetic traffic data.
-
 ---
 
 # 广告质量自动化测试平台
 
 这是一个以测试开发和质量保障为核心的小型广告系统项目，用于模拟广告活动创建、广告投放、事件采集、转化归因、质量告警、合成流量生成和自动化回归测试。
 
-该项目主要面向质量工程、测试开发、后端测试和广告系统相关岗位。它不是生产级广告服务器，而是通过一个简化的广告业务系统，模拟工业界广告系统中常见的质量风险，并用 API 测试、集成测试、性能测试和质量规则进行验证。
+它不是生产级广告服务器，而是通过一个简化的广告业务系统，模拟工业界广告系统中常见的质量风险，并用 API 测试、集成测试、性能测试和质量规则进行验证。
 
 ## 技术栈
 
@@ -395,7 +391,3 @@ performance/
 docs/
 .github/workflows/
 ```
-
-## 简历描述建议
-
-设计并实现了一个以测试开发为核心的广告质量自动化平台，使用 FastAPI、SQLAlchemy、Pytest 和 Locust，覆盖广告活动创建、广告投放、广告审核状态、频控、设备/兴趣定向、预算 pacing、简化排序分、原始事件采集、曝光/点击/转化处理、7 天转化归因、无效流量过滤、异常 CTR/CVR 告警、合成流量生成、自动化回归测试和性能测试。
